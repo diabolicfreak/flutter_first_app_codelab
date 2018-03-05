@@ -24,24 +24,26 @@ class RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
   final _saved = new Set<WordPair>();
-
+  var wordPair = new WordPair.random();
   @override
   Widget build(BuildContext context) {
-    print("build");
     return new Scaffold(
-      appBar: new AppBar(title: new Text("Welcome to flutter"),),
+      appBar: new AppBar(
+        title: new Text(wordPair.toString()),
+        actions: <Widget>[
+          new IconButton(icon: new Icon(Icons.list), onPressed: _pushSaved)
+        ],
+      ),
       body: _buildSuggestions(),
     );
   }
 
   Widget _buildSuggestions(){
-    print("_buildSuggestions");
     return new ListView.builder(
       itemBuilder: (context, i){
         if(i.isOdd) return new Divider();
         final index = i~/2;
         if(index>=_suggestions.length){
-          print("Added");
           _suggestions.addAll(generateWordPairs().take(10));
         }
         return _buildRow(_suggestions[index]);
@@ -50,7 +52,6 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   _buildRow(WordPair pair){
-    print("_buildRow");
     bool alreadySaved = _saved.contains(pair);
     return new ListTile(
       title: new Text(pair.asPascalCase, style: _biggerFont,),
@@ -59,8 +60,8 @@ class RandomWordsState extends State<RandomWords> {
         color: alreadySaved ? Colors.red : null,
       ),
       onTap: (){
-        print("tapped");
         setState((){
+            wordPair = pair;
           if(alreadySaved){
             setState(()=>_saved.remove(pair));
           }else{
@@ -68,6 +69,35 @@ class RandomWordsState extends State<RandomWords> {
           }
         });
       },
+    );
+  }
+
+  void _pushSaved(){
+    Navigator.of(context).push(
+      new MaterialPageRoute(
+        builder: (context){
+          final tiles = _saved.map((pair){
+            return new ListTile(
+              title: new Text(pair.asPascalCase, style: _biggerFont,),
+            );
+          });
+          final divided = ListTile.divideTiles(
+            context: context,
+            tiles: tiles
+          ).toList();
+
+          return new Scaffold(
+            appBar: new AppBar(
+              title: new Text('Saved Suggestions'),
+            ),
+              body: new ListView.builder(
+                itemCount: divided.length,
+                itemBuilder: (context, i){
+                  return divided[i];
+                }),
+          );
+        }
+      )
     );
   }
 }
