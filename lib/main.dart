@@ -90,11 +90,7 @@ class RandomWordsState extends State<RandomWords> {
             appBar: new AppBar(
               title: new Text('Saved Suggestions'),
             ),
-              body: new ListView.builder(
-                itemCount: divided.length,
-                itemBuilder: (context, i){
-                  return divided[i];
-                }),
+            body: new ListView(children: divided),
           );
         }
       )
