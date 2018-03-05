@@ -23,9 +23,11 @@ class RandomWords extends StatefulWidget {
 class RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
+  final _saved = new Set<WordPair>();
 
   @override
   Widget build(BuildContext context) {
+    print("build");
     return new Scaffold(
       appBar: new AppBar(title: new Text("Welcome to flutter"),),
       body: _buildSuggestions(),
@@ -33,6 +35,7 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   Widget _buildSuggestions(){
+    print("_buildSuggestions");
     return new ListView.builder(
       itemBuilder: (context, i){
         if(i.isOdd) return new Divider();
@@ -47,8 +50,24 @@ class RandomWordsState extends State<RandomWords> {
   }
 
   _buildRow(WordPair pair){
+    print("_buildRow");
+    bool alreadySaved = _saved.contains(pair);
     return new ListTile(
       title: new Text(pair.asPascalCase, style: _biggerFont,),
+      trailing: new Icon(
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
+      ),
+      onTap: (){
+        print("tapped");
+        setState((){
+          if(alreadySaved){
+            setState(()=>_saved.remove(pair));
+          }else{
+            setState(()=>_saved.add(pair));
+          }
+        });
+      },
     );
   }
 }
